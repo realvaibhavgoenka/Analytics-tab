@@ -2,15 +2,25 @@ import { GoogleGenAI } from "@google/genai";
 import { FullAnalysis } from "../types";
 
 export const generateMentorFeedback = async (analysis: FullAnalysis): Promise<string> => {
-  // Safe check for process.env (prevents crash in browser environments like GitHub Pages)
   let apiKey = '';
+
+  // 1. Try Vite standard (Best for GitHub Pages / Modern Web)
   try {
     // @ts-ignore
-    if (typeof process !== 'undefined' && process.env) {
-       apiKey = process.env.API_KEY;
+    if (import.meta && import.meta.env && import.meta.env.VITE_API_KEY) {
+      // @ts-ignore
+      apiKey = import.meta.env.VITE_API_KEY;
     }
-  } catch (e) {
-    // process is not defined
+  } catch (e) {}
+
+  // 2. Fallback to process.env (Node.js / Legacy)
+  if (!apiKey) {
+    try {
+      // @ts-ignore
+      if (typeof process !== 'undefined' && process.env) {
+         apiKey = process.env.API_KEY;
+      }
+    } catch (e) {}
   }
   
   // Production Safeguard: If no key is present, return a graceful fallback instead of crashing
