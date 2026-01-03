@@ -12,21 +12,8 @@ type ViewState =
   | { type: 'MOCK_DETAIL'; studentId: string; mockId: string; returnTo: 'ADMIN' | 'STUDENT' };
 
 export default function App() {
-  const [view, setView] = useState<ViewState>({ type: 'LOADING' });
-
-  // SIMULATE SSO: automatically detect logged-in user from "entranceug.com"
-  useEffect(() => {
-    const initSession = async () => {
-      // PRODUCTION TODO: Read user ID from cookie or JWT
-      // const userId = getUserIdFromCookie();
-      
-      setTimeout(() => {
-        // Defaulting to the demo student for the "Analytics Tab" view
-        setView({ type: 'STUDENT_DASH', studentId: 'STU_001' });
-      }, 800); 
-    };
-    initSession();
-  }, []);
+  // CHANGED: Default directly to ADMIN_DASH to manage real data
+  const [view, setView] = useState<ViewState>({ type: 'ADMIN_DASH' });
 
   // PRODUCTION TODO: Point this to your actual main dashboard
   const handleExitToMainSite = () => {
@@ -40,7 +27,7 @@ export default function App() {
         return (
           <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
             <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-slate-500 font-medium animate-pulse">Loading your analytics profile...</p>
+            <p className="text-slate-500 font-medium animate-pulse">Loading Analytics Pro...</p>
           </div>
         );
 
@@ -55,7 +42,7 @@ export default function App() {
 
       case 'STUDENT_DASH':
         const student = db.getStudent(view.studentId);
-        if (!student) return <div>Student not found</div>;
+        if (!student) return <div className="p-8 text-center text-red-500">Student ID "{view.studentId}" not found in current dataset. Please upload data in Admin Dashboard.</div>;
         return (
           <div className="min-h-screen bg-slate-50 pb-20">
              <Navbar 
@@ -107,7 +94,7 @@ const Navbar = ({ role, onBack, onToggleAdmin, onExit }: { role: string, onBack?
           <div 
             className="flex items-center gap-2 cursor-pointer" 
             onDoubleClick={onToggleAdmin} 
-            title="Double click for Admin view (Demo)"
+            title="Double click for Admin view"
           >
             <span className="text-2xl">📊</span>
             <span className="font-bold text-xl tracking-tight text-slate-800">EntranceUG Analytics</span>

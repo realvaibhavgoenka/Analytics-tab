@@ -17,6 +17,17 @@ export const MentorAI: React.FC<Props> = ({ analysis }) => {
     setLoading(false);
   };
 
+  // Helper to parse markdown-style bolding **text**
+  const parseContent = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="text-yellow-300 font-semibold">{part.replace(/\*\*/g, '')}</strong>;
+      }
+      return part;
+    });
+  };
+
   return (
     <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-xl shadow-lg text-white overflow-hidden relative">
       <div className="absolute top-0 right-0 p-3 opacity-10">
@@ -52,7 +63,7 @@ export const MentorAI: React.FC<Props> = ({ analysis }) => {
           <div className="prose prose-invert prose-sm max-w-none bg-white/10 p-4 rounded-lg border border-white/20">
             {feedback.split('\n').map((line, i) => (
               <p key={i} className="mb-2 leading-relaxed">
-                {line.startsWith('**') ? <strong className="text-yellow-300">{line.replace(/\*\*/g, '')}</strong> : line}
+                {parseContent(line)}
               </p>
             ))}
           </div>
